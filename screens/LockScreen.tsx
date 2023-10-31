@@ -1,7 +1,13 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { dismissLockscreen } from "../utils/navigation";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Linking,
+} from "react-native";
+import { dismissLockscreen, storeDeeplink } from "../utils/navigation";
 import { LockscreenStackParamList } from "../components/AppContainer";
 
 type Props = NativeStackScreenProps<LockscreenStackParamList, "Lockscreen">;
@@ -14,7 +20,13 @@ export default function LockScreen({ navigation }: Props) {
         e.preventDefault();
       }
     });
-    return unsubscribe;
+    const eventSubscription = Linking.addEventListener("url", (e) => {
+      storeDeeplink(e.url);
+    });
+    return () => {
+      unsubscribe();
+      eventSubscription.remove();
+    };
   }, []);
 
   return (

@@ -1,6 +1,5 @@
 import { LinkingOptions, NavigationContainer } from "@react-navigation/native";
 import * as Linking from "expo-linking";
-import LockscreenController from "../screens/LockscreenController";
 import LockScreen from "../screens/LockScreen";
 import HomeScreen from "../screens/HomeScreen";
 import InfoScreen from "../screens/InfoScreen";
@@ -21,7 +20,6 @@ export type MainStackParamList = {
 };
 
 export type LockscreenStackParamList = {
-  LockscreenController: undefined;
   Lockscreen: undefined;
 };
 
@@ -31,10 +29,6 @@ const LockscreenStack = () => {
       screenOptions={{ headerShown: false }}
       blockFocusChange
     >
-      <LockscreenStackNavigator.Screen
-        name="LockscreenController"
-        component={LockscreenController}
-      />
       <LockscreenStackNavigator.Screen
         name={"Lockscreen"}
         component={LockScreen}
