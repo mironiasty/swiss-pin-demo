@@ -7,15 +7,18 @@ import {
   StyleSheet,
   Linking,
 } from "react-native";
-import { dismissLockscreen, storeDeeplink } from "../utils/navigation";
-import { LockscreenStackParamList } from "../components/AppContainer";
+import {
+  LockscreenStackParamList,
+  dismissLockscreen,
+  storeDeeplink,
+} from "../utils/navigation";
 
 type Props = NativeStackScreenProps<LockscreenStackParamList, "Lockscreen">;
 
 export default function LockScreen({ navigation }: Props) {
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
-      const { type, source } = e.data.action;
+      const { source } = e.data.action;
       if (source !== "LockscreenModal") {
         e.preventDefault();
       }
@@ -38,13 +41,6 @@ export default function LockScreen({ navigation }: Props) {
         onPress={dismissLockscreen}
       >
         <Text>Unlock</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.navigationButton}
-        onPress={() => navigation.push("Info")}
-      >
-        <Text>push</Text>
       </TouchableOpacity>
     </View>
   );

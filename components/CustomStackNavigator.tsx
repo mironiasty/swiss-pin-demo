@@ -4,10 +4,17 @@ import {
   createNavigatorFactory,
   StackRouterOptions,
   StackRouter,
-  NavigationState,
   RouterConfigOptions,
+  StackNavigationState,
+  ParamListBase,
+  StackActionHelpers,
 } from "@react-navigation/native";
 import { NativeStackView } from "@react-navigation/native-stack";
+import {
+  NativeStackNavigationEventMap,
+  NativeStackNavigationOptions,
+  NativeStackNavigatorProps,
+} from "@react-navigation/native-stack/lib/typescript/src/types";
 
 function customStackRouter(
   options: StackRouterOptions,
@@ -17,10 +24,10 @@ function customStackRouter(
   const superGetStateForAction = router.getStateForAction;
 
   const getStateForAction = (
-    state: NavigationState,
+    state: StackNavigationState<{}>,
     action: any,
     options: RouterConfigOptions
-  ): {} | null => {
+  ) => {
     if (action.payload?.bypassFocusChangeBlock) {
       return superGetStateForAction(state, action, options);
     }
@@ -41,16 +48,19 @@ function CustomStackNavigator({
   screenOptions,
   blockFocusChange,
   ...rest
-}) {
+}: NativeStackNavigatorProps & { blockFocusChange?: boolean }) {
   const { state, descriptors, navigation, NavigationContent } =
-    useNavigationBuilder(
-      (stackOptions) => customStackRouter(stackOptions, blockFocusChange),
-      {
-        initialRouteName,
-        children,
-        screenOptions,
-      }
-    );
+    useNavigationBuilder<
+      StackNavigationState<ParamListBase>,
+      StackRouterOptions,
+      StackActionHelpers<ParamListBase>,
+      NativeStackNavigationOptions,
+      NativeStackNavigationEventMap
+    >((stackOptions) => customStackRouter(stackOptions, blockFocusChange), {
+      initialRouteName,
+      children,
+      screenOptions,
+    });
 
   return (
     <NavigationContent>

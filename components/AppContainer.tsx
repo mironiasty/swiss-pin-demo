@@ -1,27 +1,24 @@
 import { LinkingOptions, NavigationContainer } from "@react-navigation/native";
 import * as Linking from "expo-linking";
+import React from "react";
 import LockScreen from "../screens/LockScreen";
 import HomeScreen from "../screens/HomeScreen";
-import InfoScreen from "../screens/InfoScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 import {
+  LockscreenStackParamList,
+  MainStackParamList,
+  RootStackParamList,
   customGetStateFromPath,
   setTopLevelNavigator,
 } from "../utils/navigation";
 import CustomStackNavigator from "./CustomStackNavigator";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import ProfileScreen from "../screens/ProfileScreen";
 
-const MainStackNavigator = CustomStackNavigator<MainStackParamList>();
+const RootStackNavigator = CustomStackNavigator<RootStackParamList>();
+const MainStackNavigator = createNativeStackNavigator<MainStackParamList>();
 const LockscreenStackNavigator =
   CustomStackNavigator<LockscreenStackParamList>();
-
-export type MainStackParamList = {
-  Home: undefined;
-  Info: undefined;
-  LockscreenModal: undefined;
-};
-
-export type LockscreenStackParamList = {
-  Lockscreen: undefined;
-};
 
 const LockscreenStack = () => {
   return (
@@ -39,30 +36,50 @@ const LockscreenStack = () => {
 
 const MainStack = () => {
   return (
-    <MainStackNavigator.Navigator initialRouteName="LockscreenModal">
+    <MainStackNavigator.Navigator initialRouteName="Home">
       <MainStackNavigator.Screen name="Home" component={HomeScreen} />
-      <MainStackNavigator.Screen name="Info" component={InfoScreen} />
-      <MainStackNavigator.Screen
-        name={"LockscreenModal"}
+      <MainStackNavigator.Screen name="Profile" component={ProfileScreen} />
+      <MainStackNavigator.Screen name="Settings" component={SettingsScreen} />
+    </MainStackNavigator.Navigator>
+  );
+};
+
+const RootStack = () => {
+  return (
+    <RootStackNavigator.Navigator initialRouteName="LockscreenModal">
+      <RootStackNavigator.Screen
+        name="MainStack"
+        component={MainStack}
+        options={{ headerShown: false }}
+      />
+      <RootStackNavigator.Screen
+        name="LockscreenModal"
         component={LockscreenStack}
         options={{
           headerShown: false,
           animation: "fade",
         }}
       />
-    </MainStackNavigator.Navigator>
+    </RootStackNavigator.Navigator>
   );
 };
 
 const prefix = Linking.createURL("/");
 
-const linking: LinkingOptions<MainStackParamList> = {
+const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [prefix],
   config: {
     initialRouteName: "LockscreenModal",
     screens: {
-      Home: "home",
-      Info: "info",
+      MainStack: {
+        path: "",
+        screens: {
+          Home: "home",
+          Profile: "profile",
+          Settings: "settings",
+        },
+      },
+      LockscreenModal: "lockscreen",
     },
   },
   getStateFromPath: customGetStateFromPath,
@@ -74,7 +91,7 @@ export default function AppContainer() {
       linking={linking}
       ref={(navigatorRef) => setTopLevelNavigator(navigatorRef ?? undefined)}
     >
-      {MainStack()}
+      {RootStack()}
     </NavigationContainer>
   );
 }

@@ -3,18 +3,18 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { MainStackParamList } from "../utils/navigation";
 
-type Props = NativeStackScreenProps<MainStackParamList, "Home">;
+type Props = NativeStackScreenProps<MainStackParamList, "Profile">;
 
-export default function HomeScreen({ navigation }: Props) {
+export default function ProfileScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       <Text>Home Screen</Text>
 
       <TouchableOpacity
         style={styles.navigationButton}
-        onPress={() => navigation.navigate("Profile")}
+        onPress={() => navigation.navigate("Settings")}
       >
-        <Text>Go to Info Screen</Text>
+        <Text>Go to Settings</Text>
       </TouchableOpacity>
     </View>
   );
