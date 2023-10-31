@@ -1,0 +1,16 @@
+{
+    "singleQuote": true,
+    "bracketSameLine": true,
+    "trailingComma": "all",
+    "proseWrap": "always",
+    "arrowParens": "avoid",
+    "tabWidth": 4,
+    "overrides": [
+        {
+            "files": "*.md",
+            "options": {
+                "useTabs": false
+            }
+        }
+    ]
+}

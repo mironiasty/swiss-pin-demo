@@ -1,30 +1,31 @@
-import { createSlice, configureStore } from "@reduxjs/toolkit";
-import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { createSlice, configureStore } from '@reduxjs/toolkit';
+import type { TypedUseSelectorHook } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface AppState {
-  backgroundTime: number | null;
+    backgroundTime: number | null;
 }
 const initialState: AppState = {
-  backgroundTime: null,
+    backgroundTime: null,
 };
 
 const appStateSlice = createSlice({
-  name: "appState",
-  initialState,
-  reducers: {
-    setBackgroundTime: (state) => {
-      state.backgroundTime = Date.now();
+    name: 'appState',
+    initialState,
+    reducers: {
+        setBackgroundTime: state => {
+            state.backgroundTime = Date.now();
+        },
+        clearBackgroundTime: state => {
+            state.backgroundTime = null;
+        },
     },
-    clearBackgroundTime: (state) => {
-      state.backgroundTime = null;
-    },
-  },
 });
 
 export const { setBackgroundTime, clearBackgroundTime } = appStateSlice.actions;
 
 const store = configureStore({
-  reducer: appStateSlice.reducer,
+    reducer: appStateSlice.reducer,
 });
 
 export default store;
