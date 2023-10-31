@@ -1,16 +1,13 @@
-import {
-  CommonActions,
-  LinkingOptions,
-  NavigationContainer,
-  NavigationContainerRef,
-} from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { LinkingOptions, NavigationContainer } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 import LockscreenController from "../screens/LockscreenController";
 import LockScreen from "../screens/LockScreen";
 import HomeScreen from "../screens/HomeScreen";
 import InfoScreen from "../screens/InfoScreen";
-import { setTopLevelNavigator } from "../utils/navigation";
+import {
+  customGetStateFromPath,
+  setTopLevelNavigator,
+} from "../utils/navigation";
 import CustomStackNavigator from "./CustomStackNavigator";
 
 const MainStackNavigator = CustomStackNavigator<MainStackParamList>();
@@ -68,11 +65,13 @@ const prefix = Linking.createURL("/");
 const linking: LinkingOptions<MainStackParamList> = {
   prefixes: [prefix],
   config: {
+    initialRouteName: "LockscreenModal",
     screens: {
       Home: "home",
       Info: "info",
     },
   },
+  getStateFromPath: customGetStateFromPath,
 };
 
 export default function AppContainer() {

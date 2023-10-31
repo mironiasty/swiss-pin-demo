@@ -1,9 +1,9 @@
 import {
   CommonActions,
   NavigationContainerRef,
-  StackActions,
 } from "@react-navigation/native";
 import * as Linking from "expo-linking";
+import { getStateFromPath } from "@react-navigation/native";
 
 let isColdStart = true;
 let topLevelNavigator: NavigationContainerRef<{}> | undefined;
@@ -20,13 +20,15 @@ export function setTopLevelNavigator(
   }
 }
 
-export function storeDeeplink(link: string) {
+export function storeDeeplink(link: string | undefined) {
   storedDeeplink = link;
 }
 
 function handleStoredDeeplink() {
-  Linking.openURL(storedDeeplink);
-  storedDeeplink = undefined;
+  if (storedDeeplink) {
+    Linking.openURL(storedDeeplink);
+    storedDeeplink = undefined;
+  }
 }
 
 export function openLockscreen() {
@@ -56,4 +58,25 @@ export function dismissLockscreen() {
   if (storedDeeplink) {
     setTimeout(handleStoredDeeplink, 250);
   }
+}
+
+export async function storeInitialDeeplink() {
+  // be aware that below function won't work with debugger enabled
+  const initUrl = await Linking.getInitialURL();
+  storeDeeplink(initUrl || undefined);
+}
+
+export function customGetStateFromPath(path, options) {
+  const state = getStateFromPath(path, options);
+  const newState = { ...state };
+  if (isColdStart) {
+    storeInitialDeeplink();
+
+    if (state && state.routes.length > 1) {
+      newState.routes = state.routes.slice(0, 1);
+      return newState;
+    }
+  }
+
+  return state;
 }

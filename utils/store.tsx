@@ -4,7 +4,9 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 interface AppState {
   backgroundTime: number | null;
 }
-const initialState: AppState = { backgroundTime: null };
+const initialState: AppState = {
+  backgroundTime: null,
+};
 
 const appStateSlice = createSlice({
   name: "appState",

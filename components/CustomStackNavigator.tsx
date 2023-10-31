@@ -3,7 +3,6 @@ import {
   useNavigationBuilder,
   createNavigatorFactory,
   StackRouterOptions,
-  StackNavigationState,
   StackRouter,
   NavigationState,
   RouterConfigOptions,
@@ -17,30 +16,21 @@ function customStackRouter(
   const router = StackRouter(options);
   const superGetStateForAction = router.getStateForAction;
 
-  const getStateForRouteFocus = (
-    state: StackNavigationState<{}>,
-    key: string
-  ) => {
-    return blockFocusChange
-      ? state
-      : { ...router }.getStateForRouteFocus(state, key);
-  };
   const getStateForAction = (
     state: NavigationState,
     action: any,
     options: RouterConfigOptions
   ): {} | null => {
     if (action.payload?.bypassFocusChangeBlock) {
-      return router.getStateForAction(state, action, options);
+      return superGetStateForAction(state, action, options);
     }
     const newState = blockFocusChange
       ? state
-      : router.getStateForAction(state, action, options);
+      : superGetStateForAction(state, action, options);
     return newState;
   };
   return {
     ...router,
-    getStateForRouteFocus,
     getStateForAction,
   };
 }
