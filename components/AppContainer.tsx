@@ -5,16 +5,17 @@ import {
   NavigationContainerRef,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { AppState, StyleSheet, Text, View } from "react-native";
 import * as Linking from "expo-linking";
 import LockscreenController from "../screens/LockscreenController";
 import LockScreen from "../screens/LockScreen";
 import HomeScreen from "../screens/HomeScreen";
 import InfoScreen from "../screens/InfoScreen";
 import { setTopLevelNavigator } from "../utils/navigation";
+import CustomStackNavigator from "./CustomStackNavigator";
 
-const MainStackNavigator = createNativeStackNavigator<MainStackParamList>();
-const LockscreenStackNavigator = createNativeStackNavigator();
+const MainStackNavigator = CustomStackNavigator<MainStackParamList>();
+const LockscreenStackNavigator =
+  CustomStackNavigator<LockscreenStackParamList>();
 
 export type MainStackParamList = {
   Home: undefined;
@@ -29,7 +30,10 @@ export type LockscreenStackParamList = {
 
 const LockscreenStack = () => {
   return (
-    <LockscreenStackNavigator.Navigator screenOptions={{ headerShown: false }}>
+    <LockscreenStackNavigator.Navigator
+      screenOptions={{ headerShown: false }}
+      blockFocusChange
+    >
       <LockscreenStackNavigator.Screen
         name="LockscreenController"
         component={LockscreenController}
@@ -44,7 +48,7 @@ const LockscreenStack = () => {
 
 const MainStack = () => {
   return (
-    <MainStackNavigator.Navigator initialRouteName="Home" key="MainStack">
+    <MainStackNavigator.Navigator initialRouteName="LockscreenModal">
       <MainStackNavigator.Screen name="Home" component={HomeScreen} />
       <MainStackNavigator.Screen name="Info" component={InfoScreen} />
       <MainStackNavigator.Screen
@@ -52,7 +56,6 @@ const MainStack = () => {
         component={LockscreenStack}
         options={{
           headerShown: false,
-          gestureEnabled: false,
           animation: "fade",
         }}
       />
@@ -75,6 +78,7 @@ const linking: LinkingOptions<MainStackParamList> = {
 export default function AppContainer() {
   return (
     <NavigationContainer
+      linking={linking}
       ref={(navigatorRef) => setTopLevelNavigator(navigatorRef ?? undefined)}
     >
       {MainStack()}

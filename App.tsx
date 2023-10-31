@@ -11,16 +11,13 @@ export default function App() {
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (nextAppState === "active") {
-        console.log("ACTIVE");
         const time = Date.now();
         const { backgroundTime } = store.getState();
         if (backgroundTime && time - backgroundTime > BACKGROUND_LOCK_TIME) {
-          console.warn("SHOULD SHOW LOCKSCREEN");
           openLockscreen();
         }
         store.dispatch(clearBackgroundTime());
       } else if (nextAppState === "background") {
-        console.log("BACKGROUND");
         store.dispatch(setBackgroundTime());
       }
     });

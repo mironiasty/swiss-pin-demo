@@ -2,7 +2,8 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { MainStackParamList } from "../App";
+import { MainStackParamList } from "../components/AppContainer";
+
 type Props = NativeStackScreenProps<MainStackParamList, "Home">;
 
 export default function HomeScreen({ navigation }: Props) {

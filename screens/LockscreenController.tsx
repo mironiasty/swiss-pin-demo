@@ -1,15 +1,20 @@
 import React, { useEffect } from "react";
 import LockScreen from "./LockScreen";
-import { LockscreenStackParamList } from "../App";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Linking } from "react-native";
+import { storeDeeplink } from "../utils/navigation";
+import { LockscreenStackParamList } from "../components/AppContainer";
 
-type Props = NativeStackScreenProps<
-  LockscreenStackParamList,
-  "LockscreenController"
->;
+type Props = NativeStackScreenProps<LockscreenStackParamList, "Lockscreen">;
 
 export default function LockscreenController(props: Props) {
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const eventSubscription = Linking.addEventListener("url", (e) => {
+      storeDeeplink(e.url);
+    });
+
+    return eventSubscription.remove;
+  }, []);
 
   return <LockScreen {...props} />;
 }

@@ -1,22 +1,32 @@
 import {
   CommonActions,
-  LinkingOptions,
-  NavigationContainer,
   NavigationContainerRef,
+  StackActions,
 } from "@react-navigation/native";
 import * as Linking from "expo-linking";
 
-let topLevelNavigator: NavigationContainerRef | undefined;
+let isColdStart = true;
+let topLevelNavigator: NavigationContainerRef<{}> | undefined;
 let lastNavigateAction: CommonActions.Action | undefined;
+let storedDeeplink: string | undefined;
 
 export function setTopLevelNavigator(
-  navigator: NavigationContainerRef | undefined
+  navigator: NavigationContainerRef<{}> | undefined
 ) {
   topLevelNavigator = navigator;
   if (topLevelNavigator && lastNavigateAction) {
     topLevelNavigator.dispatch(lastNavigateAction);
     lastNavigateAction = undefined;
   }
+}
+
+export function storeDeeplink(link: string) {
+  storedDeeplink = link;
+}
+
+function handleStoredDeeplink() {
+  Linking.openURL(storedDeeplink);
+  storedDeeplink = undefined;
 }
 
 export function openLockscreen() {
@@ -29,11 +39,21 @@ export function openLockscreen() {
 }
 
 export function dismissLockscreen() {
-  console.warn("dismissLockscreen");
-  //   topLevelNavigator?.goBack();
-  topLevelNavigator?.dispatch({
-    type: "GO_BACK",
-    source: "LockscreenModal",
-    //   target: "MainStack",
-  });
+  if (isColdStart) {
+    isColdStart = false;
+    topLevelNavigator?.dispatch({
+      type: "REPLACE",
+      source: "LockscreenModal",
+      payload: { name: "Home", params: {}, bypassFocusChangeBlock: true },
+    });
+  } else {
+    topLevelNavigator?.dispatch({
+      type: "GO_BACK",
+      source: "LockscreenModal",
+      payload: { bypassFocusChangeBlock: true },
+    });
+  }
+  if (storedDeeplink) {
+    setTimeout(handleStoredDeeplink, 250);
+  }
 }
