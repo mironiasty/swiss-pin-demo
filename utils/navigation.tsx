@@ -80,3 +80,14 @@ export function customGetStateFromPath(path, options) {
 
   return state;
 }
+
+const BACKGROUND_LOCK_TIME = 2000;
+
+export function shouldShowLockscreen(backgroundTime: number | null) {
+  const time = Date.now();
+
+  return (
+    isColdStart ||
+    (backgroundTime && time - backgroundTime > BACKGROUND_LOCK_TIME)
+  );
+}
