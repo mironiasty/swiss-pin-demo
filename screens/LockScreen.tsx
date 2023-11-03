@@ -14,12 +14,14 @@ type Props = NativeStackScreenProps<LockscreenStackParamList, 'Lockscreen'>;
 
 export default function LockScreen({ navigation }: Props) {
     useEffect(() => {
+        // Prevent navigating back from lockscreen with gesture or hardware back button
         const unsubscribe = navigation.addListener('beforeRemove', e => {
             const { source } = e.data.action;
             if (source !== 'LockscreenModal') {
                 e.preventDefault();
             }
         });
+        // Navigator will prevent changing to other screens while lockscreen is active, but we want to store deeplink to handle them after unlock
         const eventSubscription = Linking.addEventListener('url', e => {
             storeDeeplink(e.url);
         });

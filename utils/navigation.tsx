@@ -46,6 +46,7 @@ export function storeDeeplink(link: string | undefined) {
 export function setTopLevelNavigator(
     navigator: NavigationContainerRef<{}> | undefined,
 ) {
+    // Store the root navigation ref to be able to dispatch actions outside of the navigation tree
     topLevelNavigator = navigator;
     if (topLevelNavigator && lastNavigateAction) {
         topLevelNavigator.dispatch(lastNavigateAction);
@@ -63,6 +64,10 @@ export function openLockscreen() {
 }
 
 export function dismissLockscreen() {
+    /*
+        Upon user unlocking the app we want to dispatch an action with bypassFocusChangeBlock property to step out of Lockscreen navigation
+        Cold start is a special case where we don't have any screen to go back to, so we replace the stack with Home screen
+    */
     if (isColdStart) {
         isColdStart = false;
         topLevelNavigator?.dispatch({
@@ -81,6 +86,7 @@ export function dismissLockscreen() {
             payload: { bypassFocusChangeBlock: true },
         });
     }
+    // any stored deeplink should be handled after a small delay, to ensure lockscreen is dismissed
     if (storedDeeplink) {
         setTimeout(handleStoredDeeplink, 250);
     }
@@ -94,6 +100,11 @@ export async function storeInitialDeeplink() {
 }
 
 export function customGetStateFromPath(path: string, options?: Options<{}>) {
+    /* 
+        Overriding getStateFromPath to properly handle case of opening app from a deeplink on a cold start
+        default state from path will include the deeplinked screen in at the end of the route and navigate to it directly
+        instead we want to only include lockscreen route in the state and store the deeplink to handle it after app unlock
+    */
     const state = getStateFromPath(path, options);
     if (isColdStart) {
         storeInitialDeeplink();

@@ -23,6 +23,7 @@ const MainStackNavigator = createNativeStackNavigator<MainStackParamList>();
 const LockscreenStackNavigator =
     CustomStackNavigator<LockscreenStackParamList>();
 
+// Lockscreen is kept on a separate stack to allow for custom navigation state handling without affecting the main stack
 const LockscreenStack = () => {
     return (
         <LockscreenStackNavigator.Navigator
