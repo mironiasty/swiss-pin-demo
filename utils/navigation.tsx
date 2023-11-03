@@ -11,7 +11,7 @@ let topLevelNavigator: NavigationContainerRef<{}> | undefined;
 let lastNavigateAction: CommonActions.Action | undefined;
 let storedDeeplink: string | undefined;
 
-const BACKGROUND_LOCK_TIME = 2000;
+const BACKGROUND_LOCK_TIME = 3_000;
 
 interface Options<ParamList extends {}> {
     screens: PathConfigMap<ParamList>;
@@ -46,6 +46,7 @@ export function storeDeeplink(link: string | undefined) {
 export function setTopLevelNavigator(
     navigator: NavigationContainerRef<{}> | undefined,
 ) {
+    // Store the root navigation ref to be able to dispatch actions outside of the navigation tree
     topLevelNavigator = navigator;
     if (topLevelNavigator && lastNavigateAction) {
         topLevelNavigator.dispatch(lastNavigateAction);
@@ -63,6 +64,10 @@ export function openLockscreen() {
 }
 
 export function dismissLockscreen() {
+    /*
+        Upon user unlocking the app we want to dispatch an action with bypassFocusChangeBlock property to step out of Lockscreen navigation
+        Cold start is a special case where we don't have any screen to go back to, so we replace the stack with Home screen
+    */
     if (isColdStart) {
         isColdStart = false;
         topLevelNavigator?.dispatch({
@@ -81,6 +86,7 @@ export function dismissLockscreen() {
             payload: { bypassFocusChangeBlock: true },
         });
     }
+    // any stored deeplink should be handled after a small delay, to ensure lockscreen is dismissed
     if (storedDeeplink) {
         setTimeout(handleStoredDeeplink, 250);
     }
@@ -88,11 +94,17 @@ export function dismissLockscreen() {
 
 export async function storeInitialDeeplink() {
     // be aware that below function won't work with debugger enabled
+    // as deeplinks in expo does not work well with expo debug
     const initUrl = await Linking.getInitialURL();
     storeDeeplink(initUrl || undefined);
 }
 
 export function customGetStateFromPath(path: string, options?: Options<{}>) {
+    /* 
+        Overriding getStateFromPath to properly handle case of opening app from a deeplink on a cold start
+        default state from path will include the deeplinked screen in at the end of the route and navigate to it directly
+        instead we want to only include lockscreen route in the state and store the deeplink to handle it after app unlock
+    */
     const state = getStateFromPath(path, options);
     if (isColdStart) {
         storeInitialDeeplink();
@@ -108,7 +120,7 @@ export function customGetStateFromPath(path: string, options?: Options<{}>) {
 }
 
 export function shouldShowLockscreen(backgroundTime: number | null) {
-    const time = Date.now();
+    const time = performance.now();
 
     return (
         isColdStart ||

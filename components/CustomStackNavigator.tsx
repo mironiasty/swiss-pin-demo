@@ -25,6 +25,12 @@ function customStackRouter(
     const router = StackRouter(options);
     const superGetStateForAction = router.getStateForAction;
 
+    /* 
+        For Lockscreen modal we want to prevent navigation state change for any action that has not originated from unlock event,
+        this allows us to freeze the navigation stack without affecting navigation for app after unlocking.
+
+        Any action that is allowed to change navigation state should have bypassFocusChangeBlock property set to true.
+    */
     const getStateForAction = (
         state: StackNavigationState<{}>,
         action: any,
@@ -44,6 +50,7 @@ function customStackRouter(
     };
 }
 
+// Default stack navigator with a custom router
 function CustomStackNavigator({
     initialRouteName,
     children,
