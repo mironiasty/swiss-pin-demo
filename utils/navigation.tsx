@@ -11,7 +11,7 @@ let topLevelNavigator: NavigationContainerRef<{}> | undefined;
 let lastNavigateAction: CommonActions.Action | undefined;
 let storedDeeplink: string | undefined;
 
-const BACKGROUND_LOCK_TIME = 2000;
+const BACKGROUND_LOCK_TIME = 3_000;
 
 interface Options<ParamList extends {}> {
     screens: PathConfigMap<ParamList>;
@@ -88,6 +88,7 @@ export function dismissLockscreen() {
 
 export async function storeInitialDeeplink() {
     // be aware that below function won't work with debugger enabled
+    // as deeplinks in expo does not work well with expo debug
     const initUrl = await Linking.getInitialURL();
     storeDeeplink(initUrl || undefined);
 }
@@ -108,7 +109,7 @@ export function customGetStateFromPath(path: string, options?: Options<{}>) {
 }
 
 export function shouldShowLockscreen(backgroundTime: number | null) {
-    const time = Date.now();
+    const time = performance.now();
 
     return (
         isColdStart ||

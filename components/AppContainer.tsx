@@ -100,7 +100,7 @@ export default function AppContainer() {
             ref={navigatorRef =>
                 setTopLevelNavigator(navigatorRef ?? undefined)
             }>
-            {RootStack()}
+            <RootStack />
         </NavigationContainer>
     );
 }

@@ -14,7 +14,9 @@ const appStateSlice = createSlice({
     initialState,
     reducers: {
         setBackgroundTime: state => {
-            state.backgroundTime = Date.now();
+            // using `performance` instead of Date!
+            // Date can be 'tricked' by user, by changing device time.
+            state.backgroundTime = performance.now();
         },
         clearBackgroundTime: state => {
             state.backgroundTime = null;

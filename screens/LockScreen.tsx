@@ -31,11 +31,11 @@ export default function LockScreen({ navigation }: Props) {
 
     return (
         <View style={styles.container}>
-            <Text>Click button below to unlock</Text>
+            <Text>Lock Screen</Text>
             <TouchableOpacity
                 style={styles.navigationButton}
                 onPress={dismissLockscreen}>
-                <Text>Unlock</Text>
+                <Text>Click button to unlock</Text>
             </TouchableOpacity>
         </View>
     );
